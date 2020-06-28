@@ -55,6 +55,10 @@ class Projector:
         self._opt_step              = None
         self._cur_step              = None
 
+        self.steps_wo_noise = 1000
+        self.steps_with_noise = 1500
+        self.init_guess = None
+
     def _info(self, *args):
         if self.verbose:
             print('Projector:', *args)
@@ -174,14 +178,17 @@ class Projector:
 
     def step(self):
         assert self._cur_step is not None
-        if self._cur_step >= self.num_steps:
+        if self._cur_step >= (self.steps_wo_noise + self.steps_with_noise):
             return
         if self._cur_step == 0:
             self._info('Running...')
 
         # Hyperparameters.
         t = self._cur_step / self.num_steps
-        noise_strength = self._dlatent_std * self.initial_noise_factor * max(0.0, 1.0 - t / self.noise_ramp_length) ** 2
+        if self._cur_step < self.steps_wo_noise:
+            noise_strength = np.zeros(self._dlatent_std.shape)
+        else:
+            noise_strength = self._dlatent_std * self.initial_noise_factor * max(0.0, 1.0 - t / self.noise_ramp_length) ** 2
         lr_ramp = min(1.0, (1.0 - t) / self.lr_rampdown_length)
         lr_ramp = 0.5 - 0.5 * np.cos(lr_ramp * np.pi)
         lr_ramp = lr_ramp * min(1.0, t / self.lr_rampup_length)
