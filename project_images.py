@@ -12,7 +12,7 @@ from training import dataset
 from training import misc
 
 
-def project_image(proj, src_file, dst_dir, tmp_dir, video=False):
+def project_image(proj, src_file, init_guess, dst_dir, tmp_dir, video=False):
 
     data_dir = '%s/dataset' % tmp_dir
     if os.path.exists(data_dir):
@@ -26,10 +26,13 @@ def project_image(proj, src_file, dst_dir, tmp_dir, video=False):
         data_dir=data_dir, tfrecord_dir='tfrecords',
         max_label_size=0, repeat=False, shuffle_mb=0
     )
+    init_guess = None
+
 
     print('Projecting image "%s"...' % os.path.basename(src_file))
     images, _labels = dataset_obj.get_minibatch_np(1)
     images = misc.adjust_dynamic_range(images, [0, 255], [-1, 1])
+
     proj.start(images)
     if video:
         video_dir = '%s/video' % tmp_dir
@@ -106,9 +109,11 @@ def main():
     )
     proj.set_network(Gs)
 
-    src_files = sorted([os.path.join(args.src_dir, f) for f in os.listdir(args.src_dir) if f[0] not in '._'])
+    # src_files = sorted([os.path.join(args.src_dir, f) for f in os.listdir(args.src_dir) if f[0] not in '._'])
+    src_files = sorted([os.path.join(args.src_dir, f) for f in os.listdir(args.src_dir) if f.endswith('jpg') or f.endswith('png')])
     for src_file in src_files:
-        project_image(proj, src_file, args.dst_dir, args.tmp_dir, video=args.video)
+        init_guess = src_file[:-3]+'.npy'
+        project_image(proj, src_file, init_guess, args.dst_dir, args.tmp_dir, video=args.video)
         if args.video:
             render_video(
                 src_file, args.dst_dir, args.tmp_dir, args.num_steps, args.video_mode,

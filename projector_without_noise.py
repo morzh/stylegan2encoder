@@ -19,8 +19,7 @@ class Projector:
         num_steps                       = 1000,
         initial_learning_rate           = 0.1,
         initial_noise_factor            = 0.05,
-        verbose                         = False,
-        _dlatent_avg                    = np.load("stylegan2_avgface.npy")
+        verbose                         = False
     ):
 
         self.vgg16_pkl                  = vgg16_pkl
@@ -68,6 +67,14 @@ class Projector:
             return
         if self.clone_net:
             self._Gs = self._Gs.clone()
+
+        # Find dlatent stats.
+        self._info('Finding W midpoint and stddev using %d samples...' % self.dlatent_avg_samples)
+        latent_samples = np.random.RandomState(123).randn(self.dlatent_avg_samples, *self._Gs.input_shapes[0][1:])
+        dlatent_samples = self._Gs.components.mapping.run(latent_samples, None) # [N, 18, 512]
+        self._dlatent_avg = np.mean(dlatent_samples, axis=0, keepdims=True) # [1, 18, 512]
+        self._dlatent_std = (np.sum((dlatent_samples - self._dlatent_avg) ** 2) / self.dlatent_avg_samples) ** 0.5
+        self._info('std = %g' % self._dlatent_std)
 
         # Find noise inputs.
         self._info('Setting up noise inputs...')
@@ -174,7 +181,7 @@ class Projector:
 
         # Hyperparameters.
         t = self._cur_step / self.num_steps
-        noise_strength = 0
+        noise_strength = self._dlatent_std * self.initial_noise_factor * max(0.0, 1.0 - t / self.noise_ramp_length) ** 2
         lr_ramp = min(1.0, (1.0 - t) / self.lr_rampdown_length)
         lr_ramp = 0.5 - 0.5 * np.cos(lr_ramp * np.pi)
         lr_ramp = lr_ramp * min(1.0, t / self.lr_rampup_length)
