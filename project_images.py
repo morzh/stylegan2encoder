@@ -26,14 +26,12 @@ def project_image(proj, src_file, init_guess, dst_dir, tmp_dir, video=False):
         data_dir=data_dir, tfrecord_dir='tfrecords',
         max_label_size=0, repeat=False, shuffle_mb=0
     )
-    init_guess = None
-
 
     print('Projecting image "%s"...' % os.path.basename(src_file))
     images, _labels = dataset_obj.get_minibatch_np(1)
     images = misc.adjust_dynamic_range(images, [0, 255], [-1, 1])
 
-    proj.start(images)
+    proj.start(images, init_guess)
     if video:
         video_dir = '%s/video' % tmp_dir
         os.makedirs(video_dir, exist_ok=True)
@@ -112,7 +110,16 @@ def main():
     # src_files = sorted([os.path.join(args.src_dir, f) for f in os.listdir(args.src_dir) if f[0] not in '._'])
     src_files = sorted([os.path.join(args.src_dir, f) for f in os.listdir(args.src_dir) if f.endswith('jpg') or f.endswith('png')])
     for src_file in src_files:
-        init_guess = src_file[:-3]+'.npy'
+        init_guess_file = src_file[:-3]+'npy'
+        if os.path.exists(init_guess_file):
+            init_guess = np.load(init_guess_file)
+            proj.num_steps = 1200
+        else:
+            init_guess = np.load('stylegan2_avgface.npy')
+            proj.num_steps = 2500
+        init_guess = np.expand_dims(init_guess, axis=0)
+        print('DEBUG:', 'init_guess.shape is:', init_guess.shape)
+
         project_image(proj, src_file, init_guess, args.dst_dir, args.tmp_dir, video=args.video)
         if args.video:
             render_video(

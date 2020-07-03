@@ -145,7 +145,7 @@ class Projector:
         pres.images = self.get_images()
         return pres
 
-    def start(self, target_images):
+    def start(self, target_images, init_guess):
         assert self._Gs is not None
 
         # Prepare target images.
@@ -160,7 +160,7 @@ class Projector:
 
         # Initialize optimization state.
         self._info('Initializing optimization state...')
-        tflib.set_vars({self._target_images_var: target_images, self._dlatents_var: np.tile(self._dlatent_avg, [self._minibatch_size, 1, 1])})
+        tflib.set_vars({self._target_images_var: target_images, self._dlatents_var: np.tile(init_guess, [self._minibatch_size, 1, 1])})
         tflib.run(self._noise_init_op)
         self._opt.reset_optimizer_state()
         self._cur_step = 0
