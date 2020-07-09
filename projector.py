@@ -68,7 +68,7 @@ class Projector:
             return
         if self.clone_net:
             self._Gs = self._Gs.clone()
-
+        # Find dlatent stats.
         # Find noise inputs.
         self._info('Setting up noise inputs...')
         self._noise_vars = []
@@ -174,7 +174,7 @@ class Projector:
 
         # Hyperparameters.
         t = self._cur_step / self.num_steps
-        noise_strength = 0
+        noise_strength = self._dlatent_std * self.initial_noise_factor * max(0.0, 1.0 - t / self.noise_ramp_length) ** 2
         lr_ramp = min(1.0, (1.0 - t) / self.lr_rampdown_length)
         lr_ramp = 0.5 - 0.5 * np.cos(lr_ramp * np.pi)
         lr_ramp = lr_ramp * min(1.0, t / self.lr_rampup_length)

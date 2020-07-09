@@ -113,10 +113,10 @@ def main():
         init_guess_file = src_file[:-3]+'npy'
         if os.path.exists(init_guess_file):
             init_guess = np.load(init_guess_file)
-            proj.num_steps = 1200
+            proj.num_steps = 900
         else:
             init_guess = np.load('stylegan2_avgface.npy')
-            proj.num_steps = 2500
+            proj.num_steps = 3000
         init_guess = np.expand_dims(init_guess, axis=0)
         print('DEBUG:', 'init_guess.shape is:', init_guess.shape)
 
