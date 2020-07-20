@@ -20,7 +20,7 @@ class Projector:
          initial_learning_rate           = 0.1,
          initial_noise_factor            = 0.05,
          verbose                         = False,
-         dlatent_avg                    = np.load("stylegan2_avgface_neutral.npy"),
+         dlatent_avg                    = np.expand_dims(np.load("stylegan2_avgface_neutral.npy"), axis=0),
          dlatent_std                    = np.load("stylegan2_avgface_neutral_std.npy")
          ):
 
