@@ -97,6 +97,8 @@ class Projector:
         self._dlatents_var = tf.Variable(tf.zeros([self._minibatch_size] + list(self._dlatent_avg.shape[1:])), name='dlatents_var')
         self._noise_in = tf.placeholder(tf.float32, [], name='noise_in')
         dlatents_noise = tf.random.normal(shape=self._dlatents_var.shape) * self._noise_in
+        print('dlatents_noise shape', dlatents_noise.shape)
+        print('dlatents_var shape', self._dlatents_var.shape)
         self._dlatents_expr = self._dlatents_var + dlatents_noise
         self._images_expr = self._Gs.components.synthesis.get_output_for(self._dlatents_expr, randomize_noise=False)
 
