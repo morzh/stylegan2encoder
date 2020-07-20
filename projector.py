@@ -15,14 +15,14 @@ from training import misc
 
 class Projector:
     def __init__(self,
-        vgg16_pkl                       = 'https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2',
-        num_steps                       = 1000,
-        initial_learning_rate           = 0.1,
-        initial_noise_factor            = 0.05,
-        verbose                         = False,
-        _dlatent_avg                    = np.load("stylegan2_avgface.npy")
-        _dlatent_std = np.load()
-    ):
+         vgg16_pkl                       = 'https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2',
+         num_steps                       = 1000,
+         initial_learning_rate           = 0.1,
+         initial_noise_factor            = 0.05,
+         verbose                         = False,
+         dlatent_avg                    = np.load("stylegan2_avgface_neutral.npy"),
+         dlatent_std                    = np.load("stylegan2_avgface_neutral_std.npy")
+         ):
 
         self.vgg16_pkl                  = vgg16_pkl
         self.num_steps                  = num_steps
@@ -38,8 +38,8 @@ class Projector:
 
         self._Gs                    = None
         self._minibatch_size        = None
-        self._dlatent_avg           = None
-        self._dlatent_std           = None
+        self._dlatent_avg           = dlatent_avg
+        self._dlatent_std           = dlatent_std
         self._noise_vars            = None
         self._noise_init_op         = None
         self._noise_normalize_op    = None
