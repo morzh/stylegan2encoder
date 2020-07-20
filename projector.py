@@ -89,6 +89,9 @@ class Projector:
         self._noise_init_op = tf.group(*noise_init_ops)
         self._noise_normalize_op = tf.group(*noise_normalize_ops)
 
+        print('avg shape', self._dlatent_avg.shape)
+        print('std ', self._dlatent_std)
+
         # Image output graph.
         self._info('Building image output graph...')
         self._dlatents_var = tf.Variable(tf.zeros([self._minibatch_size] + list(self._dlatent_avg.shape[1:])), name='dlatents_var')
