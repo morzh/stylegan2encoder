@@ -21,6 +21,7 @@ class Projector:
         initial_noise_factor            = 0.05,
         verbose                         = False,
         _dlatent_avg                    = np.load("stylegan2_avgface.npy")
+        _dlatent_std = np.load()
     ):
 
         self.vgg16_pkl                  = vgg16_pkl
