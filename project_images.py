@@ -116,7 +116,7 @@ def main():
             proj.num_steps = 950
         else:
             init_guess = np.load('stylegan2_avgface.npy')
-            proj.num_steps = 3000
+            proj.num_steps = 2500
         init_guess = np.expand_dims(init_guess, axis=0)
 
         project_image(proj, src_file, init_guess, args.dst_dir, args.tmp_dir, video=args.video)
