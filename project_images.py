@@ -118,7 +118,6 @@ def main():
             init_guess = np.load('stylegan2_avgface.npy')
             proj.num_steps = 3000
         init_guess = np.expand_dims(init_guess, axis=0)
-        print('DEBUG:', 'init_guess.shape is:', init_guess.shape)
 
         project_image(proj, src_file, init_guess, args.dst_dir, args.tmp_dir, video=args.video)
         if args.video:

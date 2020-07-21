@@ -89,9 +89,6 @@ class Projector:
         self._noise_init_op = tf.group(*noise_init_ops)
         self._noise_normalize_op = tf.group(*noise_normalize_ops)
 
-        print('avg shape', self._dlatent_avg.shape)
-        print('std ', self._dlatent_std)
-
         # Image output graph.
         self._info('Building image output graph...')
         self._dlatents_var = tf.Variable(tf.zeros([self._minibatch_size] + list(self._dlatent_avg.shape[1:])), name='dlatents_var')
@@ -110,7 +107,6 @@ class Projector:
             factor = sh[2] // 256
             proc_images_expr = tf.reduce_mean(tf.reshape(proc_images_expr, [-1, sh[1], sh[2] // factor, factor, sh[2] // factor, factor]), axis=[3,5])
 
-        print('before Loss graph')
         # Loss graph.
         self._info('Building loss graph...')
         self._target_images_var = tf.Variable(tf.zeros(proc_images_expr.shape), name='target_images_var')
@@ -119,7 +115,6 @@ class Projector:
         self._dist = self._lpips.get_output_for(proc_images_expr, self._target_images_var)
         self._loss = tf.reduce_sum(self._dist)
 
-        print('before Noise regularization graph')
         # Noise regularization graph.
         self._info('Building noise regularization graph...')
         reg_loss = 0.0
