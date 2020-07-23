@@ -98,7 +98,6 @@ class Projector:
         # print('dlatents_var shape', self._dlatents_var.shape)
         self._dlatents_expr = self._dlatents_var + dlatents_noise
         self._images_expr = self._Gs.components.synthesis.get_output_for(self._dlatents_expr, randomize_noise=False)
-        print('_dlatents_expr computed')
 
         # Downsample image to 256x256 if it's larger than that. VGG was built for 224x224 images.
         proc_images_expr = (self._images_expr + 1) * (255 / 2)
